@@ -1,0 +1,19 @@
+[package]
+name = "oddiag"
+version = "0.1.0"
+authors = ["Dustin Riley <dustin@derpenstiltskin.com>"]
+license = "MIT"
+readme = "README.md"
+description = "OneDrive utility written in Rust."
+homepage = "https://github.com/derpenstiltskin/oddiag"
+repository = "https://github.com/derpenstiltskin/oddiag"
+keywords = ["onedrive"]
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+winreg = "0.10"
+jwalk = "0.6"
+chrono = "0.4"
+csv = "1.1"
+clap = "3.2"
