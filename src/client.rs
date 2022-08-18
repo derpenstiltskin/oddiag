@@ -102,4 +102,25 @@ impl Client {
     pub fn get_business_accounts(&self) -> &Vec<ClientAccount> {
         &self.business_accounts
     }
+
+    pub fn fix_hidden_login(&self) -> Result<()> {
+        let (presign_key, disp) = RegKey::predef(HKEY_CURRENT_USER).create_subkey_with_flags("Software\\Microsoft\\OneDrive\\PreSignInRampOverrides", KEY_ALL_ACCESS)?;
+        presign_key.set_value("1559", &0u32)?;
+
+        Ok(())
+    }
+
+    pub fn enable_health_reporting(&self) -> Result<()> {
+        let (onedrive_key, disp) = RegKey::predef(HKEY_LOCAL_MACHINE).create_subkey_with_flags("Software\\Policies\\Microsoft\\OneDrive", KEY_ALL_ACCESS)?;
+        onedrive_key.set_value("EnableSyncAdminReports", &1u32)?;
+
+        Ok(())
+    }
+
+    pub fn disable_health_reporting(&self) -> Result<()> {
+        let (onedrive_key, disp) = RegKey::predef(HKEY_LOCAL_MACHINE).create_subkey_with_flags("Software\\Policies\\Microsoft\\OneDrive", KEY_ALL_ACCESS)?;
+        onedrive_key.set_value("EnableSyncAdminReports", &0u32)?;
+        
+        Ok(())
+    }
 }

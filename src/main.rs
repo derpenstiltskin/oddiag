@@ -15,25 +15,38 @@ fn main() -> Result<()> {
         .author("Dustin Riley <dustin@derpenstiltskin.com")
         .about("OneDrive utility written in Rust.")
         .arg(
-            arg!(-a --account <USERNAME> "Scopes backup and report to specified user account")
+            arg!(--account <USERNAME> "Scopes backup and report to specified user account")
             .required(false)
         )
         .arg(
-            arg!(-b --backup <PATH> "Backup local saved OneDrive files (preserves folder structure)")
+            arg!(--backup <PATH> "Backup local saved OneDrive files (preserves folder structure)")
             .required(false)
         )
         .arg(
-            arg!(-r --report <PATH> "Generate CSV report of local saved OneDrive files")
+            arg!(--report <PATH> "Generate CSV report of local saved OneDrive files")
+            .required(false)
+        )
+        .arg(
+            arg!(--fixhiddenlogin "Fixes missing OneDrive login window on MFA'ed accounts")
+            .required(false)
+        )
+        .arg(
+            arg!(--enablehealthreporting "Enables OneDrive health reporting, must be enabled at https://config.office.com")
+            .required(false)
+        )
+        .arg(
+            arg!(--disablehealthreporting "Disables OneDrive health reporting")
             .required(false)
         )
         .get_matches();
     
     let mut client = Client::new();
-    let _ = if matches.is_present("account") {
+
+    if matches.is_present("account") {
         let username = matches.try_get_one::<String>("account")?.unwrap();
-        client.scan(Some(username))
+        client.scan(Some(username))?;
     } else {
-        client.scan(None)
+        client.scan(None)?;
     };
 
     let client_version = client.get_version();
@@ -62,13 +75,13 @@ fn main() -> Result<()> {
                 println!("Total Local File Count: {}", scan.get_count());
                     
                 if matches.is_present("backup") {
-                    let backup_path = matches.try_get_one::<String>("backup")?.unwrap();
+                    let backup_path = format!("{}\\", matches.try_get_one::<String>("backup")?.unwrap());
                     scan.backup(&backup_path)?;
                     println!("Backup created in: {}", &backup_path);
                 }
         
                 if matches.is_present("report") {
-                    let report_path = format!("{}{}.csv", matches.try_get_one::<String>("report")?.unwrap(), client_business_account.get_username());
+                    let report_path = format!("{}\\{}.csv", matches.try_get_one::<String>("report")?.unwrap(), client_business_account.get_username());
                     scan.report(&report_path)?;
                     println!("Report created: {}", &report_path);
                 }
@@ -77,6 +90,22 @@ fn main() -> Result<()> {
     } else {
         println!("# ACCOUNT #########################");
         println!("No accounts found.");
+    }
+
+    if matches.is_present("fixhiddenlogin") {
+        println!("###################################");
+        client.fix_hidden_login()?;
+        println!("Applied hidden login window fix.");
+    }
+
+    if matches.is_present("enablehealthreporting") {
+        println!("###################################");
+        client.enable_health_reporting()?;
+        println!("Enabled health reporting.");
+    } else if matches.is_present("disablehealthreporting") {
+        println!("###################################");
+        client.disable_health_reporting()?;
+        println!("Disabled health reporting.");
     }
 
     println!("###################################");
