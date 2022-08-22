@@ -22,5 +22,4 @@ OPTIONS:
 
 ## Todo
 
-- Better path handling
-- Clap validators for input
+- Implement optional UI
