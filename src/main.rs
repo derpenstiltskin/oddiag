@@ -1,6 +1,5 @@
 pub mod util;
 pub mod client;
-pub mod ntfs;
 pub mod scan;
 //pub mod ui;
 

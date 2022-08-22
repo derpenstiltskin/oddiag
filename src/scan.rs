@@ -7,7 +7,16 @@ use jwalk::WalkDir;
 use csv::Writer;
 use chrono::{DateTime, Local};
 use super::is_bit_set;
-use super::ntfs::*;
+
+#[derive(Debug)]
+#[allow(unused)]
+#[repr(u32)]
+pub enum NtfsFileAttributes {
+    Hidden = 0x00000002,
+    Pinned = 0x00080000,
+    Unpinned = 0x00100000,
+    RecallOnDataAccess = 0x00400000,
+}
 
 #[derive(Debug, Clone)]
 pub struct ScanResult {
