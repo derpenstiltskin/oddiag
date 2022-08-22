@@ -11,9 +11,12 @@ keywords = ["onedrive"]
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0"
-winreg = "0.10"
-jwalk = "0.6"
-chrono = "0.4"
-csv = "1.1"
-clap = "3.2"
+anyhow = { version = "1.0" }
+winreg = { version = "0.10" }
+jwalk = { version = "0.6" }
+chrono = { version = "0.4" }
+csv = { version = "1.1" }
+clap = { version = "3.2" }
+normpath = { version = "0.3" }
+#nwg = { version = "1.0", package = "native-windows-gui" }
+#nwd = { version = "1.0", package = "native-windows-derive" }

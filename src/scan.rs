@@ -1,6 +1,6 @@
 use std::fs;
 use std::os::windows::prelude::*;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::time::SystemTime;
 use anyhow::{Result, bail};
 use jwalk::WalkDir;
@@ -115,10 +115,10 @@ impl Scan {
 
     pub fn backup<P: Into<PathBuf> + Copy>(&mut self, path: P) -> Result<()> {
         for file in &self.files {
-            let backup_dest_root: PathBuf = path.into();
+            let mut backup_dest_path: PathBuf = path.into();
             let backup_source = &file.get_path().to_str().unwrap().strip_prefix("C:\\Users\\").unwrap();
-            let backup_dest_str = format!("{}{}", &backup_dest_root.to_str().unwrap(), &backup_source);
-            let backup_dest = Path::new(&backup_dest_str);
+            backup_dest_path.push(&backup_source);            
+            let backup_dest = backup_dest_path.as_path();
 
             fs::create_dir_all(&backup_dest.parent().unwrap())?;
             fs::copy(&file.get_path().as_path(), &backup_dest)?;

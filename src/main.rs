@@ -2,12 +2,17 @@ pub mod util;
 pub mod client;
 pub mod ntfs;
 pub mod scan;
+//pub mod ui;
 
 use client::*;
 use scan::*;
+//use ui::*;
 
+use std::path::Path;
 use anyhow::Result;
 use clap::{arg, Command};
+use normpath::PathExt;
+//use nwg::NativeUi;
 
 fn main() -> Result<()> {
     let matches = Command::new("oddiag")
@@ -38,9 +43,17 @@ fn main() -> Result<()> {
             arg!(--disablehealthreporting "Disables OneDrive health reporting")
             .required(false)
         )
+        .arg(
+            arg!(--ui "Launches UI test")
+            .required(false)
+        )
         .get_matches();
     
     let mut client = Client::new();
+
+    if matches.is_present("ui") {
+        // UI Test
+    }
 
     if matches.is_present("account") {
         let username = matches.try_get_one::<String>("account")?.unwrap();
@@ -75,15 +88,22 @@ fn main() -> Result<()> {
                 println!("Total Local File Count: {}", scan.get_count());
                     
                 if matches.is_present("backup") {
-                    let backup_path = format!("{}\\", matches.try_get_one::<String>("backup")?.unwrap());
+                    let backup_arg = matches.try_get_one::<String>("backup")?.unwrap();
+                    let backup_path = Path::new(backup_arg).normalize_virtually()?;
+                    
                     scan.backup(&backup_path)?;
-                    println!("Backup created in: {}", &backup_path);
+                    println!("Backup created in: {}", &backup_path.into_os_string().to_str().unwrap());
                 }
         
                 if matches.is_present("report") {
-                    let report_path = format!("{}\\{}.csv", matches.try_get_one::<String>("report")?.unwrap(), client_business_account.get_username());
+                    let report_arg = matches.try_get_one::<String>("report")?.unwrap();
+                    
+                    let mut report_path = Path::new(report_arg).normalize_virtually()?;
+                    let report_name = format!("{}.csv", client_business_account.get_username());
+                    report_path.push(report_name);
+
                     scan.report(&report_path)?;
-                    println!("Report created: {}", &report_path);
+                    println!("Report created: {}", &report_path.into_os_string().to_str().unwrap());
                 }
             }
         }
