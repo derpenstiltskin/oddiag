@@ -9,7 +9,6 @@ use chrono::{DateTime, Local};
 use super::is_bit_set;
 
 #[derive(Debug)]
-#[allow(unused)]
 #[repr(u32)]
 pub enum NtfsFileAttributes {
     Hidden = 0x00000002,
@@ -22,17 +21,15 @@ pub enum NtfsFileAttributes {
 pub struct ScanResult {
     path: PathBuf,
     attributes: u32,
-    reparse_tag: u32,
     last_modified: SystemTime,
     size: u64,
 }
 
 impl ScanResult {
-    pub fn new<P: Into<PathBuf>>(path: P, attributes: u32, reparse_tag: u32, last_modified: SystemTime, size: u64) -> ScanResult {
+    pub fn new<P: Into<PathBuf>>(path: P, attributes: u32, last_modified: SystemTime, size: u64) -> ScanResult {
         ScanResult {
             path: path.into(),
             attributes,
-            reparse_tag,
             last_modified,
             size,
         }        
@@ -44,10 +41,6 @@ impl ScanResult {
 
     pub fn get_attributes(&self) -> u32 {
         self.attributes
-    }
-
-    pub fn get_reparse_tag(&self) -> u32 {
-        self.reparse_tag
     }
 
     pub fn get_last_modified(&self) -> SystemTime {
@@ -107,7 +100,7 @@ impl Scan {
                             !(is_bit_set!(attributes, NtfsFileAttributes::Unpinned as u32)) &&
                             !(is_bit_set!(attributes, NtfsFileAttributes::RecallOnDataAccess as u32)) &&
                             !(is_bit_set!(attributes, NtfsFileAttributes::Hidden as u32))) {
-                            self.files.push(ScanResult::new(&child.path(), attributes, 0, last_modified, size));
+                            self.files.push(ScanResult::new(&child.path(), attributes, last_modified, size));
 
                             self.size += size;
                         }
