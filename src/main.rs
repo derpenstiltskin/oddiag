@@ -15,7 +15,7 @@ use normpath::PathExt;
 
 fn main() -> Result<()> {
     let matches = Command::new("oddiag")
-        .version("0.1.0")
+        .version("0.2.0")
         .author("Dustin Riley <dustin@derpenstiltskin.com")
         .about("OneDrive utility written in Rust.")
         .arg(
